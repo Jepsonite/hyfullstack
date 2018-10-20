@@ -29,7 +29,18 @@ class App extends React.Component {
       number: this.state.newNumber
     }
     if (this.state.persons.map(person => person.name).includes(personObject.name)) {
-      alert("duplikaatti")
+      if (window.confirm(`${personObject.name} on jo luettelossa, korvataanko vanha numero uudella?`)) {
+        const person = this.state.persons.find(p => p.name === personObject.name)
+        const changedPerson = {...person, number: this.state.newNumber}
+        personService
+          .update(person.id, changedPerson)
+          .then(changedPerson => {
+            const persons = this.state.persons.filter(p => p.id !== person.id)
+            this.setState({
+              persons: persons.concat(changedPerson)
+            })
+          })
+      }
     }
     else {
       personService
